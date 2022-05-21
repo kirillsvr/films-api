@@ -2,6 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Actor;
+use App\Models\Film;
+use App\Models\Genre;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -14,11 +17,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
+        Genre::factory(10)->create();
+        Actor::factory(10)->create();
+        Film::factory(50)->create();
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        Film::all()->each(function ($film) {
+            $randomFields = Film::all()->random(rand(1, 4))->pluck('id');
+            $film->actors()->attach($randomFields);
+        });
     }
 }
