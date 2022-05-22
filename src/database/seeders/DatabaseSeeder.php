@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
         Film::factory(50)->create();
 
         Film::all()->each(function ($film) {
-            $randomFields = Film::all()->random(rand(1, 4))->pluck('id');
+            $randomFields = Actor::all()->random(rand(1, 4))->pluck('id');
             $film->actors()->attach($randomFields);
         });
     }
