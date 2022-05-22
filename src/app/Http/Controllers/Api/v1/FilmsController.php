@@ -2,30 +2,27 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Contracts\Actions\FilmsIndexActionContract;
+use App\Contracts\Actions\FilmsStoreActionContract;
+use App\Contracts\Actions\FilmsUpdateActionContract;
 use App\Http\Controllers\Controller;
-use App\Http\Filters\FilmsFilter;
 use App\Http\Requests\FilmsFilterRequest;
 use App\Http\Requests\FilmsStoreRequest;
 use App\Http\Requests\FilmsUpdateRequest;
-use App\Http\Resources\FilmsCollection;
 use App\Http\Resources\FilmsResource;
 use App\Models\Film;
 use Illuminate\Http\Response;
 
 class FilmsController extends Controller
 {
-    public function index(FilmsFilterRequest $request)
+    public function index(FilmsFilterRequest $request, FilmsIndexActionContract $action)
     {
-        $filter = app()->make(FilmsFilter::class, ['queryParams' => array_filter($request->validated())]);
-        return new FilmsCollection(Film::filter($filter)->with('actors', 'genre')->get());
+        return $action($request->validated());
     }
 
-    public function store(FilmsStoreRequest $request)
+    public function store(FilmsStoreRequest $request, FilmsStoreActionContract $action)
     {
-        $film = Film::create($request->validated());
-        $film->actors()->sync($request->actors);
-
-        return new FilmsResource($film);
+        return $action($request->validated());
     }
 
     public function show(int $id)
@@ -33,12 +30,9 @@ class FilmsController extends Controller
         return response()->json(['success' => true, 'results' => new FilmsResource(Film::with('actors', 'genre')->findOrFail($id))]);
     }
 
-    public function update(FilmsUpdateRequest $request, Film $film)
+    public function update(FilmsUpdateRequest $request, Film $film, FilmsUpdateActionContract $action)
     {
-        $film->update($request->validated());
-        $film->actors()->sync($request->actors ?? []);
-
-        return new FilmsResource($film);
+        return $action($film, $request->validated());
     }
 
     public function destroy(Film $film)
