@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\FilmsFilterRequest;
 use Illuminate\Http\Request;
 
 class FilmsController extends Controller
 {
-    public function index()
+    public function index(FilmsFilterRequest $request)
     {
         //
     }
